@@ -6,9 +6,9 @@ Update this file after every completed feature. Any AI agent reading this should
 
 ## Current Status
 
-**Phase:**
-**Last completed:**
-**Next:**
+**Phase:** Phase 1 — Foundation
+**Last completed:** 01 Homepage
+**Next:** 02 Auth
 
 ---
 
@@ -16,7 +16,7 @@ Update this file after every completed feature. Any AI agent reading this should
 
 ### Phase 1 — Foundation
 
-- [ ] 01 Homepage
+- [x] 01 Homepage
 - [ ] 02 Auth
 - [ ] 03 PostHog Initialization
 - [ ] 04 Database Schema
@@ -50,10 +50,13 @@ Update this file after every completed feature. Any AI agent reading this should
 
 ## Decisions Made During Build
 
-_Add decisions here as they are made during implementation._
+- 2026-06-24 — Built the homepage as static Server Components with local assets from `public/`, matching `context/designs/landing-page.png`.
+- 2026-06-24 — Added token-based `landing-soft-gradient` and `landing-divider-pattern` utilities in `app/globals.css` so the landing design can use gradients/patterns without hardcoded component colors.
+- 2026-06-24 — Root layout now imports Inter through `next/font/google` and applies the `--font-sans` variable on the `<html>` element.
 
 ---
 
 ## Notes
 
-_Add notes here as the build progresses — workarounds, patterns, anything that differs from the context files._
+- Homepage verification: `npm run lint` passed, `npm run build` passed after rerunning with network access for `next/font/google` to fetch Inter.
+- Local dev server already running at `http://localhost:3000`. Attempted screenshot capture was blocked because Puppeteer's bundled Chrome is missing the system library `libnspr4.so`; verified the running page responds with the expected homepage content instead.

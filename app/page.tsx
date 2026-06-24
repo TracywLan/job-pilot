@@ -1,8 +1,19 @@
-import React from 'react'
+import { Footer } from "@/components/layout/Footer";
+import { Navbar } from "@/components/layout/Navbar";
+import { BottomCta } from "@/components/homepage/BottomCta";
+import { FeatureSections } from "@/components/homepage/FeatureSections";
+import { Hero } from "@/components/homepage/Hero";
+import { Testimonial } from "@/components/homepage/Testimonial";
 
-const Home = () => {
-  return 
-    <h1 className='bg-info-dark text-white text-3xl'>Job Pilot</h1>;
+export default function HomePage() {
+  return (
+    <main className="mx-auto min-h-screen max-w-[1440px] bg-surface">
+      <Navbar />
+      <Hero />
+      <FeatureSections />
+      <Testimonial />
+      <BottomCta />
+      <Footer />
+    </main>
+  );
 }
-
-export default Home;
