@@ -7,7 +7,11 @@ const navItems = [
   { label: "Profile", href: "/profile" },
 ];
 
-export function Navbar() {
+type NavbarProps = {
+  ctaHref?: string;
+};
+
+export function Navbar({ ctaHref = "/login" }: NavbarProps) {
   return (
     <header className="flex h-16 items-center border-b border-border bg-surface px-10">
       <nav className="mx-auto flex w-full max-w-[1280px] items-center justify-between">
@@ -28,7 +32,7 @@ export function Navbar() {
         </div>
 
         <Link
-          href="/login"
+          href={ctaHref}
           className="inline-flex h-10 items-center justify-center rounded-md bg-overlay px-5 text-sm font-medium leading-5 text-accent-foreground hover:bg-overlay-dark"
         >
           Start for free

@@ -1,6 +1,10 @@
 import Link from "next/link";
 
-export function BottomCta() {
+type BottomCtaProps = {
+  ctaHref?: string;
+};
+
+export function BottomCta({ ctaHref = "/login" }: BottomCtaProps) {
   return (
     <section className="px-10">
       <div className="landing-divider-pattern mx-auto h-20 max-w-[1280px] border-x border-t border-border bg-surface" />
@@ -14,7 +18,7 @@ export function BottomCta() {
         </p>
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
-            href="/login"
+            href={ctaHref}
             className="inline-flex h-12 items-center justify-center rounded-md bg-overlay px-6 text-sm font-medium leading-5 text-accent-foreground hover:bg-overlay-dark"
           >
             Get Started <span className="ml-2"> &gt;</span>

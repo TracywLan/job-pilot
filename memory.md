@@ -1,56 +1,67 @@
-# Memory — Homepage Build
+# Memory — Auth And Login Redesign
 
-Last updated: 2026-06-24
+Last updated: 2026-06-24 16:37 EDT
 
 ## What was built
 
-Completed Feature 01 — Homepage.
+Completed Feature 02 — Auth.
 
-Created the full landing page from `context/designs/landing-page.png` using assets from `public/`:
+Created InsForge OAuth auth flow and protected-route foundation:
 
-- `app/layout.tsx` — root layout, metadata, Inter via `next/font/google`, `--font-sans` applied on `<html>`.
-- `app/page.tsx` — homepage assembly.
-- `components/layout/Navbar.tsx` — top nav with logo, Dashboard, Find Jobs, Profile, and Start for free CTA.
-- `components/layout/Footer.tsx` — footer with logo and links.
-- `components/homepage/Hero.tsx` — pastel hero, headline, CTA buttons, dashboard preview image.
-- `components/homepage/FeatureSections.tsx` — two alternating feature/media sections.
-- `components/homepage/FeatureTextBlock.tsx` — reusable bordered feature text row.
-- `components/homepage/PatternDivider.tsx` — landing divider band.
-- `components/homepage/Testimonial.tsx` — success story section.
-- `components/homepage/BottomCta.tsx` — final gradient CTA.
-- `app/globals.css` — added token-based `landing-soft-gradient` and `landing-divider-pattern` utilities.
+- `actions/auth.ts` — server actions initiate Google and GitHub OAuth through InsForge SSR auth helpers.
+- `app/(auth)/login/page.tsx` — redesigned OAuth login page based on `context/designs/Login-card.webp`, using JobPilot branding, `landing-soft-gradient`, centered welcome copy, Google/GitHub buttons, and `react-icons` provider logos.
+- `app/api/auth/callback/route.ts` — OAuth callback exchanges `insforge_code` and redirects to `/dashboard`.
+- `app/api/auth/refresh/route.ts` — InsForge refresh route.
+- `proxy.ts` — Next.js 16 proxy protects `/dashboard`, `/profile`, `/find-jobs`, and nested find-jobs paths.
+- `lib/insforge-client.ts`, `lib/insforge-server.ts`, `lib/insforge-config.ts` — InsForge browser/server clients and config validation.
+- `app/dashboard/page.tsx` — minimal protected dashboard placeholder so successful OAuth redirects do not land on 404 before the full dashboard feature.
 
-Updated required project docs:
+Updated docs and tracking:
 
-- `context/ui-registry.md` — imprinted navbar, footer, hero, feature rows, media panels, testimonial, and bottom CTA patterns.
-- `context/progress-tracker.md` — marked `01 Homepage` complete and set next item to `02 Auth`.
+- `context/progress-tracker.md` — marked `02 Auth` complete; next feature is `03 PostHog Initialization`.
+- `context/ui-registry.md` — imprinted the redesigned Login Page and Dashboard Placeholder patterns.
+- `context/code-standards.md` — added `react-icons` to approved dependencies for OAuth brand icons.
+- `package.json` / `package-lock.json` — added `@insforge/sdk` and `react-icons`.
 
 ## Decisions made
 
-- Homepage is static Server Component UI only; no auth redirect logic wired yet.
-- Used local `public/` image assets for the dashboard preview, jobs list, agent log, logo, and testimonial avatar.
-- Kept landing-only gradient and divider styles in `app/globals.css` as token-based utilities so component classes avoid hardcoded colors and raw Tailwind color scales.
-- Split helper UI into separate component files to respect the project rule of one component per file.
+- Used `@insforge/sdk` SSR helpers, not the older documented `@insforge/ssr` package, because the latest InsForge MCP docs and installed package expose `@insforge/sdk/ssr`.
+- Used Next.js 16 root `proxy.ts` instead of deprecated `middleware.ts`, based on installed Next docs.
+- OAuth starts on the server and stores the PKCE verifier in an httpOnly cookie; callback exchange also runs server-side so refresh cookies stay server-owned.
+- Login remains OAuth-only. The reference login image was used for composition, not copied literally with email/password fields.
+- The minimal `/dashboard` route is temporary and should not be confused with Feature 14’s full dashboard UI.
+- Provider icons use `react-icons/fa` (`FaGoogle`, `FaGithub`) while colors stay token-based.
 
 ## Problems solved
 
-- `npm run build` initially failed because `next/font/google` needed network access to fetch Inter. Rerunning the build with network access succeeded.
-- Starting another dev server hit an existing Next dev process. The app is already available from the existing server at `http://localhost:3000`.
-- Puppeteer screenshot verification was blocked because the bundled Chrome is missing system library `libnspr4.so`; verified the served homepage content via HTTP instead.
+- InsForge auth initially failed because `NEXT_PUBLIC_INSFORGE_URL` was configured with a key-shaped value instead of a URL. `lib/insforge-config.ts` now validates URL shape and rejects malformed/swapped config.
+- Successful OAuth initially redirected to a 404 because `/dashboard` did not exist. Added a temporary protected dashboard destination.
+- Review found proxy redirects could discard auth cookie refresh/cleanup mutations. `proxy.ts` now copies cookies from the session response to redirect responses.
+- Review found callback failures were too opaque. OAuth init and callback exchange errors now log server-side while keeping user-facing messages generic.
+- Login redesign briefly had stale JSX and stray `react-icons` imports; cleaned up and verified.
 
 ## Current state
 
 - `npm run lint` passes.
 - `npm run build` passes.
-- Homepage responds on the existing local dev server at `http://localhost:3000`.
-- Visual implementation is complete against the provided landing-page design, but no automated screenshot was captured due to the local browser dependency issue.
-- `package.json` and `package-lock.json` were already modified in the worktree before the homepage handoff and were not intentionally edited for this feature.
+- Local probes previously confirmed `/login` returns 200 and unauthenticated `/dashboard` redirects to `/login`.
+- Progress tracker says Phase 1 Foundation is active, last completed `02 Auth`, next `03 PostHog Initialization`.
+- `context/designs/Login-card.webp` is present and was used as the login layout reference.
+- Worktree still includes unrelated existing changes to `AGENTS.md` and deleted `CLAUDE.md`; these were not authored as part of auth and should not be reverted without user approval.
 
 ## Next session starts with
 
-Start Feature 02 — Auth. Before implementing, read the required context files from `AGENTS.md` and check the local Next.js 16 docs for the auth, routing, middleware/proxy, and navigation APIs that will be touched.
+Start Feature 03 — PostHog Initialization.
+
+Before implementing:
+
+1. Run `/remember restore`.
+2. Read the required context files from `AGENTS.md`.
+3. Re-read the PostHog section in `context/library-docs.md` and any applicable current docs/skills.
+4. Implement only PostHog setup: browser client, server client, root provider/init, identify after login, reset on logout when logout exists or add the correct placeholder plan if logout is not yet built.
 
 ## Open questions
 
-- Confirm whether the existing `package.json` / `package-lock.json` changes are expected before committing or publishing work.
-- Decide whether to install/fix a usable browser dependency for future visual screenshot checks, or continue with manual browser review.
+- There is no logout UI/route yet, but Feature 03 expects `posthog.reset()` on logout. Decide whether Feature 03 should add a small logout action/button or defer reset wiring until logout exists.
+- Confirm whether the temporary dashboard placeholder should stay until Feature 14 or be replaced earlier when dashboard UI work begins.
+- OAuth provider setup depends on valid InsForge environment variables and provider configuration; do not persist or expose actual credential values.

@@ -37,3 +37,68 @@ Read in this exact order before any implementation:
 - `/recover` — when something breaks after one failed correction.
 - `/remember save` — when a feature spans multiple sessions.
 - `/remember restore` — when returning after a multi-session feature.
+
+## InsForge MCP Instructions
+
+The InsForge MCP server is configured for Codex as `insforge`.
+
+### What InsForge Provides
+
+InsForge is the backend-as-a-service platform for this project:
+
+- Database: PostgreSQL with PostgREST API
+- Authentication: email/password plus OAuth providers such as Google and GitHub
+- Storage: file upload and download
+- AI: OpenRouter key provisioning and model catalog for direct OpenAI-compatible integrations
+- Functions: serverless function deployment
+- Realtime: WebSocket pub/sub for database and client events
+
+### Documentation Tools
+
+Before writing or editing InsForge integration code, call the InsForge MCP `fetch-docs` or `fetch-sdk-docs` tool for current documentation.
+
+Use `fetch-docs` with `docType`:
+
+- `instructions` - Essential backend setup
+- `real-time` - Realtime pub/sub over WebSockets
+- `db-sdk` - Database operations with the TypeScript SDK
+- `auth-sdk` - TypeScript SDK auth methods for custom auth flows
+- `storage-sdk` - File storage operations
+- `functions-sdk` - Serverless function invocation
+- `ai-integration-sdk` - AI integration with OpenRouter and OpenAI-compatible clients
+- `deployment` - Frontend deployment
+
+Use `fetch-sdk-docs` for a specific feature and language:
+
+- Features: `db`, `storage`, `functions`, `auth`, `ai`, `realtime`, `payments`
+- Languages: `typescript`, `swift`, `kotlin`, `rest-api`
+
+### SDK vs MCP
+
+Use SDKs for application logic:
+
+- Authentication
+- Database CRUD
+- Storage operations
+- AI integration through OpenRouter or OpenAI-compatible APIs
+- Serverless function invocation
+- Payments checkout and customer portal session creation
+
+Use MCP tools for infrastructure:
+
+- Project scaffolding with `download-template`
+- Backend metadata with `get-backend-metadata`
+- Database schema management with `run-raw-sql` and `get-table-schema`
+- Storage bucket management with `create-bucket`, `list-buckets`, `delete-bucket`
+- Serverless function deployment with `create-function`, `update-function`, `delete-function`
+- Frontend deployment with `create-deployment`
+
+### Important Project Overrides
+
+- This existing project uses Tailwind CSS v4 with tokens in `app/globals.css`; do not downgrade or switch to Tailwind 3.4 unless the user explicitly asks.
+- This project currently documents `@insforge/ssr` patterns in `context/library-docs.md`; when implementing InsForge code, fetch the latest MCP docs first and reconcile them with the project architecture.
+- SDK operations generally return `{ data, error }`; handle the `error` value explicitly.
+- Database inserts may require array format depending on the SDK/API surface.
+- Serverless functions have one endpoint and do not support nested route paths.
+- Storage uploads should store URLs in the database after upload.
+- AI integrations should keep provider keys server-side.

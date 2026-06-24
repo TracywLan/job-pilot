@@ -145,6 +145,46 @@ Last updated: 2026-06-24
 
 **Pattern notes:**
 Bottom CTA reuses the hero button pairing and gradient treatment, framed by patterned divider bands to match the landing-page rhythm.
+
+### Login Page
+
+File: app/(auth)/login/page.tsx
+Last updated: 2026-06-24
+
+| Property         | Class                                                                                  |
+| ---------------- | -------------------------------------------------------------------------------------- |
+| Background       | page `bg-background`, full-screen section `landing-soft-gradient`, buttons `bg-surface` / `bg-overlay` |
+| Border           | provider button and error `border border-border`, divider `bg-border`                  |
+| Border radius    | buttons/message `rounded-md`                                                          |
+| Text — primary   | heading `text-text-slate`, button `text-text-primary`                                  |
+| Text — secondary | body/footer `text-text-secondary`, divider `text-text-muted`                           |
+| Spacing          | page `px-6 py-10 sm:px-10`, centered column `max-w-[500px] py-12`, actions `mt-8 grid gap-3`, buttons `h-14 px-4 gap-3` |
+| Hover state      | Google `hover:bg-surface-secondary`, GitHub `hover:bg-overlay-dark`, disabled `disabled:cursor-not-allowed disabled:opacity-60` |
+| Shadow           | buttons/message `shadow-sm`                                                           |
+| Accent usage     | Eyebrow `text-accent`, Google icon `text-info-medium`, primary OAuth button `bg-overlay text-accent-foreground` |
+
+**Pattern notes:**
+Auth pages use an airy full-screen welcome composition: logo top-left, centered welcome copy, OAuth actions in a narrow stack, and a divider between provider options. Provider buttons include brand icons from `react-icons` while keeping color usage token-based. The background reuses the landing soft gradient so auth feels connected to the homepage while staying OAuth-only.
+
+### Dashboard Placeholder
+
+File: app/dashboard/page.tsx
+Last updated: 2026-06-24
+
+| Property         | Class                                                                                      |
+| ---------------- | ------------------------------------------------------------------------------------------ |
+| Background       | page `bg-background`, panel `bg-surface`                                                    |
+| Border           | `border border-border`                                                                      |
+| Border radius    | panel `rounded-xl`, buttons `rounded-md`                                                    |
+| Text — primary   | `text-text-primary`                                                                         |
+| Text — secondary | `text-text-secondary`                                                                       |
+| Spacing          | page `px-10 py-8`, panel `p-6`, actions `mt-6 flex flex-wrap gap-3`                         |
+| Hover state      | primary `hover:bg-overlay-dark`, secondary `hover:bg-surface-secondary`                     |
+| Shadow           | `shadow-sm`                                                                                 |
+| Accent usage     | Eyebrow `text-accent`, primary CTA `bg-overlay text-accent-foreground`                      |
+
+**Pattern notes:**
+This is a temporary authenticated landing surface only. The full dashboard cards, activity, and charts remain reserved for Feature 14.
 ## How to Use
 
 Before building any component:
