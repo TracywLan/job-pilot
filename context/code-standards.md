@@ -315,6 +315,7 @@ Approved dependencies for this project:
 - `pdf-parse` — Extract text from uploaded PDF
 - `zod` — Schema validation
 - `lucide-react` — Icons
+- `react-icons` — Brand icons for OAuth provider buttons
 - `tailwindcss` — Styling
 - `shadcn/ui` components — UI primitives
 

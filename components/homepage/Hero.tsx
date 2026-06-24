@@ -1,7 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 
-export function Hero() {
+type HeroProps = {
+  ctaHref?: string;
+};
+
+export function Hero({ ctaHref = "/login" }: HeroProps) {
   return (
     <section className="px-10 py-14">
       <div className="mx-auto max-w-[1280px] overflow-hidden border border-border bg-surface">
@@ -15,7 +19,7 @@ export function Hero() {
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
-              href="/login"
+              href={ctaHref}
               className="inline-flex h-12 items-center justify-center rounded-md bg-overlay px-6 text-sm font-medium leading-5 text-accent-foreground hover:bg-overlay-dark"
             >
               Get Started <span className="ml-2"> &gt;</span>
