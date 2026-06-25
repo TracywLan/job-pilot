@@ -184,7 +184,52 @@ Last updated: 2026-06-24
 | Accent usage     | Eyebrow `text-accent`, primary CTA `bg-overlay text-accent-foreground`                      |
 
 **Pattern notes:**
-This is a temporary authenticated landing surface only. The full dashboard cards, activity, and charts remain reserved for Feature 14.
+This is a temporary authenticated landing surface only. The full dashboard cards, activity, and charts remain reserved for Feature 14. The Sign out button uses the same secondary button treatment as the Find jobs action.
+
+### Logout Button
+
+File: components/auth/LogoutButton.tsx
+Last updated: 2026-06-24
+
+| Property         | Class                                                                 |
+| ---------------- | --------------------------------------------------------------------- |
+| Background       | `bg-surface`                                                          |
+| Border           | `border border-border`                                                |
+| Border radius    | `rounded-md`                                                          |
+| Text — primary   | `text-text-primary`                                                   |
+| Text — secondary | `none`                                                                |
+| Spacing          | `h-10 px-5`                                                           |
+| Hover state      | `hover:bg-surface-secondary`, disabled `disabled:opacity-60`          |
+| Shadow           | `none`                                                                |
+| Accent usage     | `none`                                                                |
+
+**Pattern notes:**
+Client-only auth control. It resets PostHog on click before calling the server sign-out action, then the action redirects to `/login`.
+
+### PostHog Runtime Components
+
+Files: app/providers.tsx, app/PostHogPageView.tsx, app/PostHogIdentify.tsx
+Last updated: 2026-06-24
+
+| Property         | Class  |
+| ---------------- | ------ |
+| Background       | `none` |
+| Border           | `none` |
+| Border radius    | `none` |
+| Text — primary   | `none` |
+| Text — secondary | `none` |
+| Spacing          | `none` |
+| Hover state      | `none` |
+| Shadow           | `none` |
+| Accent usage     | `none` |
+
+**Pattern notes:**
+Invisible client-only runtime components. `PHProvider` initializes the browser client, `PostHogPageView` manually captures `$pageview` on route changes, and `PostHogIdentify` identifies the current InsForge user after auth state is available.
+
+### Feature Notes
+
+- 2026-06-24 — Feature 04 Database Schema introduced no new UI components. This registry is intentionally unchanged beyond this note because the feature was backend-only infrastructure work.
+
 ## How to Use
 
 Before building any component:

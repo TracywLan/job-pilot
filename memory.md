@@ -1,67 +1,63 @@
-# Memory — Auth And Login Redesign
+# Memory — Feature 04 Database Schema
 
-Last updated: 2026-06-24 16:37 EDT
+Last updated: 2026-06-24 22:27 EDT
 
 ## What was built
 
-Completed Feature 02 — Auth.
+Completed Feature 04 — Database Schema.
 
-Created InsForge OAuth auth flow and protected-route foundation:
+Created and applied the backend infrastructure for JobPilot:
 
-- `actions/auth.ts` — server actions initiate Google and GitHub OAuth through InsForge SSR auth helpers.
-- `app/(auth)/login/page.tsx` — redesigned OAuth login page based on `context/designs/Login-card.webp`, using JobPilot branding, `landing-soft-gradient`, centered welcome copy, Google/GitHub buttons, and `react-icons` provider logos.
-- `app/api/auth/callback/route.ts` — OAuth callback exchanges `insforge_code` and redirects to `/dashboard`.
-- `app/api/auth/refresh/route.ts` — InsForge refresh route.
-- `proxy.ts` — Next.js 16 proxy protects `/dashboard`, `/profile`, `/find-jobs`, and nested find-jobs paths.
-- `lib/insforge-client.ts`, `lib/insforge-server.ts`, `lib/insforge-config.ts` — InsForge browser/server clients and config validation.
-- `app/dashboard/page.tsx` — minimal protected dashboard placeholder so successful OAuth redirects do not land on 404 before the full dashboard feature.
+- `migrations/20260624_feature_04_database_schema.sql` — committed SQL migration that creates `profiles`, `agent_runs`, `jobs`, and `agent_logs`, plus the `profiles.updated_at` trigger, indexes, grants, RLS policies, and resume storage policies on `storage.objects`.
+- InsForge live backend — applied the migration through MCP and created the private `resumes` storage bucket.
+- `context/progress-tracker.md` — marked `04 Database Schema` complete and moved the project to Phase 2 with `05 Profile Page — Full UI` next.
+- `context/ui-registry.md` — added a note that Feature 04 introduced no new UI components because it was backend-only.
 
-Updated docs and tracking:
+Previous Feature 03 PostHog initialization work is still present in the worktree, including:
 
-- `context/progress-tracker.md` — marked `02 Auth` complete; next feature is `03 PostHog Initialization`.
-- `context/ui-registry.md` — imprinted the redesigned Login Page and Dashboard Placeholder patterns.
-- `context/code-standards.md` — added `react-icons` to approved dependencies for OAuth brand icons.
-- `package.json` / `package-lock.json` — added `@insforge/sdk` and `react-icons`.
+- `app/providers.tsx`, `app/PostHogPageView.tsx`, `app/PostHogIdentify.tsx`
+- `lib/posthog-client.ts`, `lib/posthog-server.ts`
+- `components/auth/LogoutButton.tsx`
+- related wiring in `app/layout.tsx`, `app/dashboard/page.tsx`, and `actions/auth.ts`
 
 ## Decisions made
 
-- Used `@insforge/sdk` SSR helpers, not the older documented `@insforge/ssr` package, because the latest InsForge MCP docs and installed package expose `@insforge/sdk/ssr`.
-- Used Next.js 16 root `proxy.ts` instead of deprecated `middleware.ts`, based on installed Next docs.
-- OAuth starts on the server and stores the PKCE verifier in an httpOnly cookie; callback exchange also runs server-side so refresh cookies stay server-owned.
-- Login remains OAuth-only. The reference login image was used for composition, not copied literally with email/password fields.
-- The minimal `/dashboard` route is temporary and should not be confused with Feature 14’s full dashboard UI.
-- Provider icons use `react-icons/fa` (`FaGoogle`, `FaGithub`) while colors stay token-based.
+- Established a checked-in SQL migration file as the source of truth for backend schema, then applied the same SQL through InsForge MCP.
+- Kept `profiles` lazy-created for now; do not auto-create profile rows during auth.
+- Enforced enum-like fields with SQL check constraints instead of loose text.
+- Used `profiles.id` as the auth-linked owner key and `user_id` ownership on the other three tables.
+- Made the `resumes` bucket private and restricted `storage.objects` access to the `resumes/{user_id}/...` path pattern.
+- Included operational schema basics now: UUID defaults, timestamp defaults, indexes, the `profiles.updated_at` trigger, and explicit privilege tightening so `anon` does not retain broad table access.
 
 ## Problems solved
 
-- InsForge auth initially failed because `NEXT_PUBLIC_INSFORGE_URL` was configured with a key-shaped value instead of a URL. `lib/insforge-config.ts` now validates URL shape and rejects malformed/swapped config.
-- Successful OAuth initially redirected to a 404 because `/dashboard` did not exist. Added a temporary protected dashboard destination.
-- Review found proxy redirects could discard auth cookie refresh/cleanup mutations. `proxy.ts` now copies cookies from the session response to redirect responses.
-- Review found callback failures were too opaque. OAuth init and callback exchange errors now log server-side while keeping user-facing messages generic.
-- Login redesign briefly had stale JSX and stray `react-icons` imports; cleaned up and verified.
+- Verified the real InsForge auth/storage shape before writing SQL: `auth.users` exists, `auth.uid()` is available for RLS, and storage access is controlled through `storage.objects`.
+- Found that newly created public tables had broader base privileges than desired, then fixed that by revoking access from `anon` and relying on authenticated grants plus RLS.
+- Confirmed the storage model by enabling RLS on `storage.objects` and adding bucket-specific policies instead of assuming bucket creation alone enforced per-user access.
 
 ## Current state
 
-- `npm run lint` passes.
-- `npm run build` passes.
-- Local probes previously confirmed `/login` returns 200 and unauthenticated `/dashboard` redirects to `/login`.
-- Progress tracker says Phase 1 Foundation is active, last completed `02 Auth`, next `03 PostHog Initialization`.
-- `context/designs/Login-card.webp` is present and was used as the login layout reference.
-- Worktree still includes unrelated existing changes to `AGENTS.md` and deleted `CLAUDE.md`; these were not authored as part of auth and should not be reverted without user approval.
+- Feature 04 is complete both in the repo and in the live InsForge backend.
+- InsForge MCP verification confirmed the four tables, constraints, indexes, RLS policies, `profiles.updated_at` trigger, resume storage policies, and the private `resumes` bucket.
+- `context/progress-tracker.md` now says Phase 2 is active, last completed `04 Database Schema`, next `05 Profile Page — Full UI`.
+- No new UI was built in Feature 04.
+- `npm run lint` and `npm run build` were not rerun for Feature 04 because this session only changed SQL and tracking docs.
+- The worktree still contains the earlier PostHog feature files and an unrelated `.gitignore` change adding `.env.local`; do not revert unrelated changes unless the user asks.
 
 ## Next session starts with
 
-Start Feature 03 — PostHog Initialization.
+Start Feature 05 — Profile Page UI.
 
 Before implementing:
 
 1. Run `/remember restore`.
-2. Read the required context files from `AGENTS.md`.
-3. Re-read the PostHog section in `context/library-docs.md` and any applicable current docs/skills.
-4. Implement only PostHog setup: browser client, server client, root provider/init, identify after login, reset on logout when logout exists or add the correct placeholder plan if logout is not yet built.
+2. Read the required context files from `AGENTS.md` in order.
+3. Use `/architect` before building because Feature 05 is a substantial UI feature.
+4. Build the full `/profile` page with mock data only first, following `context/build-plan.md`, `context/ui-rules.md`, `context/ui-tokens.md`, and `context/ui-registry.md`.
+5. After building the UI, update `context/progress-tracker.md` and `context/ui-registry.md`.
 
 ## Open questions
 
-- There is no logout UI/route yet, but Feature 03 expects `posthog.reset()` on logout. Decide whether Feature 03 should add a small logout action/button or defer reset wiring until logout exists.
-- Confirm whether the temporary dashboard placeholder should stay until Feature 14 or be replaced earlier when dashboard UI work begins.
-- OAuth provider setup depends on valid InsForge environment variables and provider configuration; do not persist or expose actual credential values.
+- Feature 05 should confirm whether any reusable profile UI primitives already exist before creating new ones.
+- Feature 06 will need to decide how completion percentage and missing-field indicators are calculated and whether they are persisted or derived on save.
+- Later feature work still needs to fire the typed PostHog helpers at the four approved event points.

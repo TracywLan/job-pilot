@@ -64,3 +64,18 @@ export async function signInWithGoogle(): Promise<never> {
 export async function signInWithGithub(): Promise<never> {
   return signInWithProvider("github");
 }
+
+export async function signOut(): Promise<never> {
+  const cookieStore = await cookies();
+  const auth = createAuthActions({ cookies: cookieStore });
+  const { error } = await auth.signOut().catch((error: unknown) => {
+    console.error("[actions/auth]", error);
+    return { error };
+  });
+
+  if (error) {
+    console.error("[actions/auth]", error);
+  }
+
+  redirect("/login");
+}

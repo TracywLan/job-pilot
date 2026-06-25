@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { LogoutButton } from "@/components/auth/LogoutButton";
 import { Navbar } from "@/components/layout/Navbar";
 import { createInsforgeServer } from "@/lib/insforge-server";
 
@@ -47,6 +48,7 @@ export default async function DashboardPage() {
             >
               Find jobs
             </Link>
+            <LogoutButton />
           </div>
         </div>
       </section>
